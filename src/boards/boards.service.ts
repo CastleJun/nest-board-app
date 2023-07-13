@@ -27,4 +27,8 @@ export class BoardsService {
   getOneBoard(id: string): BoardsModel {
     return this.boards.find((board) => board.id === id);
   }
+
+  deleteOneBoard(id: string) {
+    this.boards = this.boards.filter((board) => board.id !== id);
+  }
 }
