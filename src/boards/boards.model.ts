@@ -1,4 +1,7 @@
-export type BoardStatus = 'private' | 'public';
+export enum BoardStatus {
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE',
+}
 
 export interface BoardsModel {
   id: string;
