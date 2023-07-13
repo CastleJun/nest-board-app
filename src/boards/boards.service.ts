@@ -23,4 +23,8 @@ export class BoardsService {
 
     return boards;
   }
+
+  getOneBoard(id: string): BoardsModel {
+    return this.boards.find((board) => board.id === id);
+  }
 }
