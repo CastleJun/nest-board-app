@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BoardsModel, BoardStatus } from './boards.model';
 import { v1 as uuid } from 'uuid';
+import { CreateBoardsDto } from './dto/create-boards.dto';
 
 @Injectable()
 export class BoardsService {
@@ -10,13 +11,12 @@ export class BoardsService {
     return this.boards;
   }
 
-  createBoards({ title, description }: { title: string; description: string }) {
+  createBoards(createBoardsDto: CreateBoardsDto) {
     const boards: BoardsModel = {
       //TODO 추후 DATABASE 연결시 자동으로 생성하기 전 까지 uuid lib로 대체한다.
       id: uuid(),
-      title,
-      description,
       status: BoardStatus.PUBLIC,
+      ...createBoardsDto,
     };
 
     this.boards.push(boards);
