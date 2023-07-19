@@ -1,14 +1,20 @@
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Board } from './board.entity';
-import { Injectable } from '@nestjs/common';
+import { CreateBoardsDto } from './dto/create-boards.dto';
+import { BoardStatus } from './boards.status-enum';
+import { CustomRepository } from '../typeorm-util/typeorm-ex.decorator';
 
-@Injectable()
+@CustomRepository(Board)
 export class BoardRepository extends Repository<Board> {
-  constructor(dataSource: DataSource) {
-    super(Board, dataSource.createEntityManager());
-  }
+  async createBoard(createBoardDto: CreateBoardsDto): Promise<Board> {
+    const { title, description } = createBoardDto;
+    const board = this.create({
+      title,
+      description,
+      status: BoardStatus.PUBLIC,
+    });
 
-  async getBoardById(id: number) {
-    return await this.findOneBy({ id: id });
+    await this.save(board);
+    return board;
   }
 }
