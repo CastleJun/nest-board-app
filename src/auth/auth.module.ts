@@ -5,10 +5,10 @@ import { TypeOrmExModule } from '../typeorm-util/typeorm-ex.module';
 import { UserRepository } from './user.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
-    TypeOrmExModule.forCustomRepository([UserRepository]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: 'Secret!',
@@ -16,8 +16,10 @@ import { PassportModule } from '@nestjs/passport';
         expiresIn: 60 * 60,
       },
     }),
+    TypeOrmExModule.forCustomRepository([UserRepository]),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
+  exports: [JwtStrategy, PassportModule],
 })
 export class AuthModule {}
