@@ -3,17 +3,24 @@ import { BoardRepository } from './board.repository';
 import { Board } from './board.entity';
 import { CreateBoardsDto } from './dto/create-boards.dto';
 import { BoardStatus } from './boards.status-enum';
+import { User } from '../auth/user.entity';
 
 @Injectable()
 export class BoardsService {
   constructor(private boardRepository: BoardRepository) {}
 
-  async getAllBoard() {
-    return this.boardRepository.find();
+  async getAllBoard(user: User) {
+    const query = await this.boardRepository
+      .createQueryBuilder('board')
+      .where('board.userId = :userId', { userId: user.id });
+    const boards = await query.getMany();
+
+    console.log(user);
+    return boards;
   }
 
-  createBoard(createBoardDto: CreateBoardsDto): Promise<Board> {
-    return this.boardRepository.createBoard(createBoardDto);
+  createBoard(createBoardDto: CreateBoardsDto, user: User): Promise<Board> {
+    return this.boardRepository.createBoard(createBoardDto, user);
   }
 
   async getOneBoard(id: number): Promise<Board> {
@@ -26,8 +33,11 @@ export class BoardsService {
     return found;
   }
 
-  async deleteOneBoard(id: number): Promise<void> {
-    const result = await this.boardRepository.delete(id);
+  async deleteOneBoard(id: number, user: User): Promise<void> {
+    const result = await this.boardRepository.delete({
+      id,
+      user: { id: user.id },
+    });
 
     if (result.affected === 0) {
       throw new NotFoundException(`Can't find Board with id ${id}`);
